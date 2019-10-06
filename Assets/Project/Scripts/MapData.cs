@@ -20,6 +20,9 @@ namespace Project.Scripts
         [SerializeField]
         private TextAsset textAsset;
 
+        [SerializeField]
+        private string resourcePath = "MapData";
+
         [NotNull]
         public int[,] MakeMap()
         {
@@ -51,7 +54,14 @@ namespace Project.Scripts
         }
 
         [NotNull]
-        public List<string> GetTextFromFile() => GetTextFromFile(textAsset);
+        public List<string> GetTextFromFile()
+        {
+            if (textAsset == null)
+            {
+                textAsset = Resources.Load<TextAsset>($"{resourcePath}/Demo");
+            }
+            return GetTextFromFile(textAsset);
+        }
 
         [NotNull]
         public List<string> GetTextFromFile([NotNull] TextAsset textAsset)
