@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Project.Scripts
 {
@@ -58,7 +59,8 @@ namespace Project.Scripts
         {
             if (textAsset == null)
             {
-                textAsset = Resources.Load<TextAsset>($"{resourcePath}/Demo");
+                var sceneName = SceneManager.GetActiveScene().name;
+                textAsset = Resources.Load<TextAsset>($"{resourcePath}/{sceneName}");
             }
             return GetTextFromFile(textAsset);
         }
