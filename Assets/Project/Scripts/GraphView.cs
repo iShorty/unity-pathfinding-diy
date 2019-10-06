@@ -1,44 +1,43 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Net.Http.Headers;
-using JetBrains.Annotations;
-using Project.Scripts;
+﻿using JetBrains.Annotations;
 using Project.Scripts.Project.Scripts;
 using UnityEngine;
 
-[RequireComponent(typeof(Graph))]
-public class GraphView : MonoBehaviour
+namespace Project.Scripts
 {
-    [SerializeField]
-    private GameObject nodeViewPrefab;
-
-    [SerializeField]
-    private Color baseColor = Color.white;
-
-    [SerializeField]
-    private Color wallColor = Color.black;
-
-    public void Initialize([NotNull] Graph graph)
+    [RequireComponent(typeof(Graph))]
+    public class GraphView : MonoBehaviour
     {
-        if (graph == null) return;
+        [SerializeField]
+        private GameObject nodeViewPrefab;
 
-        foreach (var node in graph.Nodes)
+        [SerializeField]
+        private Color baseColor = Color.white;
+
+        [SerializeField]
+        private Color wallColor = Color.black;
+
+        public void Initialize([NotNull] Graph graph)
         {
-            var instance = Instantiate(nodeViewPrefab, Vector3.zero, Quaternion.identity, transform);
-            instance.name = nodeViewPrefab.name;
+            if (graph == null) return;
 
-            var nodeView = instance.GetComponent<NodeView>();
-            if (nodeView == null) continue;
-
-            nodeView.Initialize(node);
-            switch (node.Type)
+            foreach (var node in graph.Nodes)
             {
-                case NodeType.Open:
-                    nodeView.ColorNode(baseColor);
-                    break;
-                case NodeType.Blocked:
-                    nodeView.ColorNode(wallColor);
-                    break;
+                var instance = Instantiate(nodeViewPrefab, Vector3.zero, Quaternion.identity, transform);
+                instance.name = nodeViewPrefab.name;
+
+                var nodeView = instance.GetComponent<NodeView>();
+                if (nodeView == null) continue;
+
+                nodeView.Initialize(node);
+                switch (node.Type)
+                {
+                    case NodeType.Open:
+                        nodeView.ColorNode(baseColor);
+                        break;
+                    case NodeType.Blocked:
+                        nodeView.ColorNode(wallColor);
+                        break;
+                }
             }
         }
     }
