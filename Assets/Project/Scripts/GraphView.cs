@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using System.Collections.Generic;
+using JetBrains.Annotations;
 using Project.Scripts.Project.Scripts;
 using UnityEngine;
 
@@ -16,9 +17,13 @@ namespace Project.Scripts
         [SerializeField]
         private Color wallColor = Color.black;
 
+        public NodeView[,] Views { get; private set; }
+
         public void Initialize([NotNull] Graph graph)
         {
             if (graph == null) return;
+
+            Views = new NodeView[graph.Width, graph.Height];
 
             foreach (var node in graph.Nodes)
             {
@@ -29,6 +34,8 @@ namespace Project.Scripts
                 if (nodeView == null) continue;
 
                 nodeView.Initialize(node);
+                Views[node.Index.x, node.Index.y] = nodeView;
+
                 switch (node.Type)
                 {
                     case NodeType.Open:
@@ -40,5 +47,23 @@ namespace Project.Scripts
                 }
             }
         }
+
+        public void ColorNodes([NotNull] List<Node> nodes, Color color)
+        {
+            for (var i = 0; i < nodes.Count; ++i)
+            {
+                var node = nodes[i];
+                if (node == null) continue;
+
+                var view = Views[node.Index.x, node.Index.y];
+                if (view == null) continue;
+
+                view.ColorNode(color);
+            }
+        }
+
+        public NodeView GetView([NotNull] Node node) => GetView(node.Index);
+
+        public NodeView GetView(in Vector2Int index) => Views[index.x, index.y];
     }
 }

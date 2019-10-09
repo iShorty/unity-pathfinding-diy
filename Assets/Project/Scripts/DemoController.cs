@@ -10,6 +10,15 @@ namespace Project.Scripts
         [SerializeField]
         private Graph graph;
 
+        [SerializeField]
+        private Pathfinder pathfinder;
+
+        [SerializeField]
+        private Vector2Int startCoordinates = Vector2Int.zero;
+
+        [SerializeField]
+        private Vector2Int goalCoordinates = new Vector2Int(15, 1);
+
         private void Start()
         {
             if (mapData == null || graph == null) return;
@@ -21,6 +30,12 @@ namespace Project.Scripts
             if (graphView == null) return;
 
             graphView.Initialize(graph);
+
+            if (!graph.IsWithinBounds(startCoordinates) || !graph.IsWithinBounds(goalCoordinates) ||
+                pathfinder == null) return;
+            var startNode = graph.GetNode(startCoordinates);
+            var goalNode = graph.GetNode(goalCoordinates);
+            pathfinder.Initialize(graph, graphView, startNode, goalNode);
         }
     }
 }

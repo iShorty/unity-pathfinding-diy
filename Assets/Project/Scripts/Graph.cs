@@ -29,6 +29,10 @@ namespace Project.Scripts
 
         public Node[,] Nodes { get; private set; }
 
+        public int Width => _mapWidth;
+
+        public int Height => _mapHeight;
+
         public void Initialize([NotNull] int[,] mapData)
         {
             _mapData = mapData;
@@ -74,7 +78,8 @@ namespace Project.Scripts
             where TNodes : class, ICollection<Node>
             => GetNeighbors(pos, Nodes, AllDirections, nodeNeighbors);
 
-        [NotNull]
+        public Node GetNode(in Vector2Int pos) => Nodes[pos.x, pos.y];
+
         private void GetNeighbors<TDirections, TNodes>(in Vector2Int pos, [NotNull] Node[,] nodes, [NotNull] TDirections directions, [NotNull] TNodes nodeNeighbors)
             where TDirections : class, IReadOnlyList<Vector2Int>
             where TNodes : class, ICollection<Node>
