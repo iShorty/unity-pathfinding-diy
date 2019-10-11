@@ -46,7 +46,7 @@ namespace Project.Scripts
             renderer.material.color = color;
         }
 
-        public void ShowArrow()
+        public void ShowArrow(Color color)
         {
             if (_node == null || arrow == null || _node.Previous == null) return;
 
@@ -54,6 +54,9 @@ namespace Project.Scripts
 
             var direction = (_node.Previous.Position - _node.Position).normalized;
             arrow.transform.rotation = Quaternion.LookRotation(direction);
+
+            var arrowRenderer = arrow.GetComponent<Renderer>();
+            if (arrowRenderer != null) arrowRenderer.material.color = color;
         }
 
         private void EnableObject([NotNull] GameObject obj, bool state = true)

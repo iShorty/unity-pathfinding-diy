@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices.WindowsRuntime;
 using JetBrains.Annotations;
 using Project.Scripts.Project.Scripts;
 using UnityEngine;
@@ -23,6 +24,12 @@ namespace Project.Scripts
 
         [SerializeField]
         private Color pathColor = Color.cyan;
+
+        [SerializeField]
+        private Color arrowColor = new Color(0.85f, 0.85f, 0.85f, 1f);
+
+        [SerializeField]
+        private Color highlightColor = new Color(1f, 1f, 0.5f, 1f);
 
         private Node _startNode;
         private Node _goalNode;
@@ -94,6 +101,11 @@ namespace Project.Scripts
                 }
 
                 ExpandFrontier(node);
+                if (_frontierNodes.Contains(_goalNode))
+                {
+                    _pathNodes = GetPathNodes(_goalNode);
+                }
+
                 ShowColors();
                 ShowNodeArrows();
 
@@ -106,7 +118,8 @@ namespace Project.Scripts
         private void ShowNodeArrows()
         {
             if (_graphView == null) return;
-            _graphView.ShowNodeArrows(_frontierNodes);
+            if (_frontierNodes != null) _graphView.ShowNodeArrows(_frontierNodes, arrowColor);
+            if (_pathNodes != null) _graphView.ShowNodeArrows(_pathNodes, highlightColor);
         }
 
         private void ExpandFrontier([NotNull] Node node)
@@ -132,12 +145,27 @@ namespace Project.Scripts
 
             if (_frontierNodes != null) graphView.ColorNodes(_frontierNodes, frontierColor);
             if (_exploredNodes != null) graphView.ColorNodes(_exploredNodes, exploredColor);
+            if (_pathNodes != null) graphView.ColorNodes(_pathNodes, pathColor);
 
             var startNodeView = graphView.GetView(start);
             if (startNodeView != null) startNodeView.ColorNode(startColor);
 
             var goalNodeView = graphView.GetView(goal);
             if (goalNodeView != null) goalNodeView.ColorNode(goalColor);
+        }
+
+        [SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalse")]
+        [NotNull]
+        private List<Node> GetPathNodes([NotNull] Node endNode)
+        {
+            var path = new List<Node>();
+            while (endNode != null)
+            {
+                path.Add(endNode);
+                endNode = endNode.Previous;
+            }
+            path.Reverse();
+            return path;
         }
     }
 }

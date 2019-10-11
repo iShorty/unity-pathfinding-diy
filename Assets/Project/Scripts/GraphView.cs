@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using JetBrains.Annotations;
 using Project.Scripts.Project.Scripts;
 using UnityEngine;
@@ -64,21 +63,21 @@ namespace Project.Scripts
         }
 
         [SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalse")]
-        public void ShowNodeArrows([NotNull] Node node)
+        public void ShowNodeArrows([NotNull] Node node, Color color)
         {
             if (node == null) return;
 
             var view = GetView(node);
             if (view == null) return;
 
-            view.ShowArrow();
+            view.ShowArrow(color);
         }
 
-        public void ShowNodeArrows([NotNull] IEnumerable<Node> nodes)
+        public void ShowNodeArrows([NotNull] IEnumerable<Node> nodes, Color color)
         {
             foreach (var node in nodes)
             {
-                ShowNodeArrows(node);
+                ShowNodeArrows(node, color);
             }
         }
 
