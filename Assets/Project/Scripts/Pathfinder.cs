@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices.WindowsRuntime;
 using JetBrains.Annotations;
 using Project.Scripts.Project.Scripts;
 using UnityEngine;
@@ -30,6 +29,18 @@ namespace Project.Scripts
 
         [SerializeField]
         private Color highlightColor = new Color(1f, 1f, 0.5f, 1f);
+
+        [SerializeField]
+        private bool showIterations = true;
+
+        [SerializeField]
+        private bool showColors = true;
+
+        [SerializeField]
+        private bool showArrows = true;
+
+        [SerializeField]
+        private bool exitOnGoal = true;
 
         private Node _startNode;
         private Node _goalNode;
@@ -89,6 +100,8 @@ namespace Project.Scripts
 
         public IEnumerator Search(float timeStep = 0.1f)
         {
+            var timeStart = Time.time;
+
             yield return null;
             while (_frontierNodes.Count > 0)
             {
@@ -101,18 +114,32 @@ namespace Project.Scripts
                 }
 
                 ExpandFrontier(node);
-                if (_frontierNodes.Contains(_goalNode))
+
+                var foundGoal = _frontierNodes.Contains(_goalNode);
+                if (foundGoal)
                 {
                     _pathNodes = GetPathNodes(_goalNode);
                 }
 
-                ShowColors();
-                ShowNodeArrows();
+                if (showIterations)
+                {
+                    ShowDiagnostics();
+                    yield return new WaitForSeconds(timeStep);
+                }
 
-                yield return new WaitForSeconds(timeStep);
+                if (foundGoal && exitOnGoal) break;
             }
 
             IsComplete = true;
+            Debug.Log($"Elapsed time: {Time.time - timeStart} seconds.");
+
+            ShowDiagnostics();
+        }
+
+        private void ShowDiagnostics()
+        {
+            if (showColors) ShowColors();
+            if (showArrows) ShowNodeArrows();
         }
 
         private void ShowNodeArrows()
