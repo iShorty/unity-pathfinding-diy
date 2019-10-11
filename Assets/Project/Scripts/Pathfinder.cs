@@ -95,11 +95,18 @@ namespace Project.Scripts
 
                 ExpandFrontier(node);
                 ShowColors();
+                ShowNodeArrows();
 
                 yield return new WaitForSeconds(timeStep);
             }
 
             IsComplete = true;
+        }
+
+        private void ShowNodeArrows()
+        {
+            if (_graphView == null) return;
+            _graphView.ShowNodeArrows(_frontierNodes);
         }
 
         private void ExpandFrontier([NotNull] Node node)

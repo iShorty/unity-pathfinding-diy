@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using JetBrains.Annotations;
 using Project.Scripts.Project.Scripts;
 using UnityEngine;
@@ -58,6 +60,25 @@ namespace Project.Scripts
                 if (view == null) continue;
 
                 view.ColorNode(color);
+            }
+        }
+
+        [SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalse")]
+        public void ShowNodeArrows([NotNull] Node node)
+        {
+            if (node == null) return;
+
+            var view = GetView(node);
+            if (view == null) return;
+
+            view.ShowArrow();
+        }
+
+        public void ShowNodeArrows([NotNull] IEnumerable<Node> nodes)
+        {
+            foreach (var node in nodes)
+            {
+                ShowNodeArrows(node);
             }
         }
 
