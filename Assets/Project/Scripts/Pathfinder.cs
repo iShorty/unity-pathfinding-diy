@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
@@ -33,6 +34,10 @@ namespace Project.Scripts
         private List<Node> _exploredNodes;
         private List<Node> _pathNodes;
 
+        private int _iterations;
+
+        public bool IsComplete { get; private set; }
+
         [SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalse")]
         public void Initialize([NotNull] Graph graph, [NotNull] GraphView graphView, [NotNull] Node start,
             [NotNull] Node goal)
@@ -54,11 +59,7 @@ namespace Project.Scripts
             _startNode = start;
             _goalNode = goal;
 
-            var startNodeView = graphView.GetView(start);
-            if (startNodeView != null) startNodeView.ColorNode(startColor);
-
-            var goalNodeView = graphView.GetView(goal);
-            if (goalNodeView != null) goalNodeView.ColorNode(goalColor);
+            ShowColors();
 
             _frontierNodes = new Queue<Node>();
             _frontierNodes.Enqueue(start);
@@ -74,6 +75,62 @@ namespace Project.Scripts
                     node?.Reset();
                 }
             }
+
+            IsComplete = false;
+            _iterations = 0;
+        }
+
+        public IEnumerator Search(float timeStep = 0.1f)
+        {
+            yield return null;
+            while (_frontierNodes.Count > 0)
+            {
+                var node = _frontierNodes.Dequeue();
+                ++_iterations;
+
+                if (!_exploredNodes.Contains(node))
+                {
+                    _exploredNodes.Add(node);
+                }
+
+                ExpandFrontier(node);
+                ShowColors();
+
+                yield return new WaitForSeconds(timeStep);
+            }
+
+            IsComplete = true;
+        }
+
+        private void ExpandFrontier([NotNull] Node node)
+        {
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (node == null) return;
+            foreach (var neighbor in node.Neighbors)
+            {
+                if (_exploredNodes.Contains(neighbor)) continue;
+                if (_frontierNodes.Contains(neighbor)) continue;
+
+                neighbor.Previous = node;
+                _frontierNodes.Enqueue(neighbor);
+            }
+        }
+
+        private void ShowColors() => ShowColors(_graphView, _startNode, _goalNode);
+
+        [SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalse")]
+        private void ShowColors([NotNull] GraphView graphView, [NotNull] Node start, [NotNull] Node goal)
+        {
+            if (graphView == null || start == null || goal == null) return;
+
+            if (_frontierNodes != null) graphView.ColorNodes(_frontierNodes, frontierColor);
+            if (_exploredNodes != null) graphView.ColorNodes(_exploredNodes, exploredColor);
+
+            var startNodeView = graphView.GetView(start);
+            if (startNodeView != null) startNodeView.ColorNode(startColor);
+
+            var goalNodeView = graphView.GetView(goal);
+            if (goalNodeView != null) goalNodeView.ColorNode(goalColor);
         }
     }
 }

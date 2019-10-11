@@ -48,11 +48,10 @@ namespace Project.Scripts
             }
         }
 
-        public void ColorNodes([NotNull] List<Node> nodes, Color color)
+        public void ColorNodes([NotNull] IEnumerable<Node> nodes, Color color)
         {
-            for (var i = 0; i < nodes.Count; ++i)
+            foreach (var node in nodes)
             {
-                var node = nodes[i];
                 if (node == null) continue;
 
                 var view = Views[node.Index.x, node.Index.y];
