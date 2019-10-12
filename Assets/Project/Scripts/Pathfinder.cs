@@ -131,6 +131,9 @@ namespace Project.Scripts
                     case GraphSearchMode.GreedyBestFirst:
                         ExpandFrontierGreedyBestFirst(node);
                         break;
+                    case GraphSearchMode.AStar:
+                        ExpandFrontierAStar(node);
+                        break;
                 }
 
                 var foundGoal = _frontierNodes.Contains(_goalNode);
@@ -239,6 +242,30 @@ namespace Project.Scripts
 
                 neighbor.Previous = node;
                 _frontierNodes.Enqueue(neighbor);
+            }
+        }
+
+        private void ExpandFrontierAStar([NotNull] Node node)
+        {
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (node == null) return;
+            foreach (var neighbor in node.Neighbors)
+            {
+                if (_exploredNodes.Contains(neighbor)) continue;
+
+                var distanceToNeighbor = _graph.GetNodeDistance(node, neighbor);
+                var terrainCost = (int)node.Type;
+                var newDistanceTraveled = node.DistanceTraveled + distanceToNeighbor + terrainCost;
+
+                if (float.IsInfinity(neighbor.DistanceTraveled) || neighbor.DistanceTraveled > newDistanceTraveled)
+                {
+                    var heuristicToGoal = _graph.GetNodeDistance(neighbor, _goalNode);
+                    neighbor.DistanceTraveled = newDistanceTraveled;
+                    neighbor.Priority = newDistanceTraveled + heuristicToGoal;
+                    neighbor.Previous = node;
+                }
+
+                if (!_frontierNodes.Contains(neighbor)) _frontierNodes.Enqueue(neighbor);
             }
         }
 

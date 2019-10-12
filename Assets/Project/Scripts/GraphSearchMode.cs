@@ -5,5 +5,6 @@ namespace Project.Scripts
         BreadthFirstSearch = 0,
         Dijkstra = 1,
         GreedyBestFirst = 2,
+        AStar = 3
     }
 }

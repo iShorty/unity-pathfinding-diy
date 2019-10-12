@@ -305,7 +305,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fba265b864964d128441ff3e4f533c94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mode: 1
+  mode: 3
   startColor: {r: 0, g: 1, b: 0, a: 1}
   goalColor: {r: 1, g: 0, b: 0, a: 1}
   frontierColor: {r: 1, g: 0, b: 1, a: 1}
@@ -315,7 +315,7 @@ MonoBehaviour:
   highlightColor: {r: 1, g: 1, b: 0.5, a: 1}
   showIterations: 1
   showColors: 1
-  showArrows: 1
+  showArrows: 0
   exitOnGoal: 1
   lerpColorAmount: 0.75
 --- !u!4 &855121994
@@ -448,7 +448,7 @@ MonoBehaviour:
   graph: {fileID: 1874008835}
   pathfinder: {fileID: 855121993}
   startCoordinates: {x: 1, y: 0}
-  goalCoordinates: {x: 13, y: 10}
+  goalCoordinates: {x: 27, y: 10}
   timeStep: 0
 --- !u!4 &1277054407
 Transform:
