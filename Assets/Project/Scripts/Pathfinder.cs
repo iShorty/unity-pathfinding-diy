@@ -107,7 +107,7 @@ namespace Project.Scripts
 
         public IEnumerator Search(float timeStep = 0.1f)
         {
-            var timeStart = Time.time;
+            var timeStart = Time.realtimeSinceStartup;
 
             yield return null;
             while (_frontierNodes.Count > 0)
@@ -152,7 +152,7 @@ namespace Project.Scripts
             }
 
             IsComplete = true;
-            Debug.Log($"Elapsed time: {Time.time - timeStart} seconds. Distance traveled: {_goalNode.DistanceTraveled} units.");
+            Debug.Log($"Elapsed time: {Time.realtimeSinceStartup - timeStart} seconds. Distance traveled: {_goalNode.DistanceTraveled} units.");
 
             ShowDiagnostics();
         }
