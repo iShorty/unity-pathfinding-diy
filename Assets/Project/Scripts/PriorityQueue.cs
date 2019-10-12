@@ -30,11 +30,6 @@ namespace Project.Scripts
 
                 // Swap parent and child.
                 (_data[parentIndex], _data[childIndex]) = (item, _data[parentIndex]);
-                /*
-                var parent = _data[parentIndex];
-                _data[parentIndex] = item;
-                _data[childIndex] = parent;
-                */
 
                 childIndex = parentIndex;
             }
@@ -71,11 +66,6 @@ namespace Project.Scripts
 
                 // Swap the items.
                 (_data[parentIndex], _data[childIndex]) = (_data[childIndex], _data[parentIndex]);
-                /*
-                var parent = _data[parentIndex];
-                _data[parentIndex] = _data[childIndex];
-                _data[childIndex] = parent;
-                */
 
                 parentIndex = childIndex;
             }

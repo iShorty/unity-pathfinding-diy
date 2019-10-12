@@ -22,8 +22,6 @@ namespace Project.Scripts
             new Vector2Int(-1, 1)
         };
 
-        [NotNull]
-        private List<Node> _walls = new List<Node>();
         private int[,] _mapData;
         private int _mapWidth;
         private int _mapHeight;
@@ -51,10 +49,6 @@ namespace Project.Scripts
                     var node = new Node(new Vector2Int(xIndex, yIndex), type);
 
                     Nodes[xIndex, yIndex] = node;
-                    if (type == NodeType.Blocked)
-                    {
-                        _walls.Add(node);
-                    }
                 }
             }
 
@@ -86,6 +80,15 @@ namespace Project.Scripts
 
             // Here, 1.4 is an approximation of sqrt(1^2 + 1^2) = sqrt(2)
             return 1.4f * diagonalSteps + straightSteps;
+        }
+
+        [SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalse")]
+        public float GetManhattanNodeDistance([NotNull] Node a, [NotNull] Node b)
+        {
+            if (a == null || b == null) return Mathf.Infinity;
+            var dx = Mathf.Abs(a.Index.x - b.Index.x);
+            var dy = Mathf.Abs(a.Index.y - b.Index.y);
+            return dx + dy;
         }
 
         public bool IsWithinBounds(in Vector2Int pos) => pos.x >= 0 && pos.x < _mapWidth &&

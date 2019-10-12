@@ -128,6 +128,9 @@ namespace Project.Scripts
                     case GraphSearchMode.Dijkstra:
                         ExpandFrontierDijkstra(node);
                         break;
+                    case GraphSearchMode.GreedyBestFirst:
+                        ExpandFrontierGreedyBestFirst(node);
+                        break;
                 }
 
                 var foundGoal = _frontierNodes.Contains(_goalNode);
@@ -210,6 +213,32 @@ namespace Project.Scripts
                 }
 
                 if (!_frontierNodes.Contains(neighbor)) _frontierNodes.Enqueue(neighbor);
+            }
+        }
+
+        private void ExpandFrontierGreedyBestFirst([NotNull] Node node)
+        {
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (node == null || _graph == null) return;
+            foreach (var neighbor in node.Neighbors)
+            {
+                if (_exploredNodes.Contains(neighbor)) continue;
+                if (_frontierNodes.Contains(neighbor)) continue;
+
+                // We don't need the distance traveled for the search itself,
+                // but it does help us in judging the quality of the trajectory.
+                var distanceToNeighbor = _graph.GetNodeDistance(node, neighbor);
+                var terrainCost = (int)node.Type;
+                var newDistanceTraveled = node.DistanceTraveled + distanceToNeighbor + terrainCost;
+                neighbor.DistanceTraveled = newDistanceTraveled;
+
+                // Since we added a priority queue instead of a regular one,
+                // this broke the BFS algorithm. We can emulate regular queue behavior
+                // by adding a monotonically increasing priority for each item.
+                neighbor.Priority = _graph.GetNodeDistance(neighbor, _goalNode);
+
+                neighbor.Previous = node;
+                _frontierNodes.Enqueue(neighbor);
             }
         }
 
