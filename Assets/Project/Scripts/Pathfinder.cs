@@ -51,7 +51,7 @@ namespace Project.Scripts
         private Graph _graph;
         private GraphView _graphView;
 
-        private Queue<Node> _frontierNodes;
+        private PriorityQueue<Node> _frontierNodes;
         private List<Node> _exploredNodes;
         private List<Node> _pathNodes;
 
@@ -82,7 +82,7 @@ namespace Project.Scripts
 
             ShowColors();
 
-            _frontierNodes = new Queue<Node>();
+            _frontierNodes = new PriorityQueue<Node>();
             _frontierNodes.Enqueue(start);
 
             _exploredNodes = new List<Node>();
@@ -120,7 +120,7 @@ namespace Project.Scripts
                 switch (mode)
                 {
                     case GraphSearchMode.BreadthFirstSearch:
-                        ExpandFrontierBFS(node);
+                        ExpandFrontierBreadthFirst(node);
                         break;
                     case GraphSearchMode.Dijkstra:
                         ExpandFrontierDijkstra(node);
@@ -161,7 +161,7 @@ namespace Project.Scripts
             if (_pathNodes != null) _graphView.ShowNodeArrows(_pathNodes, highlightColor);
         }
 
-        private void ExpandFrontierBFS([NotNull] Node node)
+        private void ExpandFrontierBreadthFirst([NotNull] Node node)
         {
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (node == null) return;
@@ -169,6 +169,11 @@ namespace Project.Scripts
             {
                 if (_exploredNodes.Contains(neighbor)) continue;
                 if (_frontierNodes.Contains(neighbor)) continue;
+
+                // Since we added a priority queue instead of a regular one,
+                // this broke the BFS algorithm. We can emulate regular queue behavior
+                // by adding a monotonically increasing priority for each item.
+                neighbor.Priority = _exploredNodes.Count;
 
                 neighbor.Previous = node;
                 _frontierNodes.Enqueue(neighbor);
@@ -189,6 +194,7 @@ namespace Project.Scripts
                 if (float.IsInfinity(neighbor.DistanceTraveled) || neighbor.DistanceTraveled > newDistanceTraveled)
                 {
                     neighbor.DistanceTraveled = newDistanceTraveled;
+                    neighbor.Priority = newDistanceTraveled;
                     neighbor.Previous = node;
                 }
 

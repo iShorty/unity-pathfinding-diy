@@ -1,16 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using Project.Scripts.Project.Scripts;
 using UnityEngine;
 
 namespace Project.Scripts
 {
-    public sealed class Node
+    public sealed class Node : IComparable<Node>
     {
         public readonly NodeType Type;
         public readonly Vector2Int Index;
 
         public float DistanceTraveled = Mathf.Infinity;
+
+        public float Priority = 0f;
 
         public Node(Vector2Int index, NodeType type)
         {
@@ -29,6 +32,13 @@ namespace Project.Scripts
         public void Reset()
         {
             Previous = null;
+        }
+
+        public int CompareTo([CanBeNull] Node other)
+        {
+            if (ReferenceEquals(this, other)) return 0;
+            if (ReferenceEquals(null, other)) return 1;
+            return Priority.CompareTo(other.Priority);
         }
     }
 }
