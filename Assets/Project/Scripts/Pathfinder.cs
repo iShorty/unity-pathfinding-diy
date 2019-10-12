@@ -10,6 +10,9 @@ namespace Project.Scripts
     public class Pathfinder : MonoBehaviour
     {
         [SerializeField]
+        private GraphSearchMode mode = GraphSearchMode.BreadthFirstSearch;
+
+        [SerializeField]
         private Color startColor = Color.green;
 
         [SerializeField]
@@ -96,6 +99,7 @@ namespace Project.Scripts
 
             IsComplete = false;
             _iterations = 0;
+            _startNode.DistanceTraveled = 0;
         }
 
         public IEnumerator Search(float timeStep = 0.1f)
@@ -113,7 +117,15 @@ namespace Project.Scripts
                     _exploredNodes.Add(node);
                 }
 
-                ExpandFrontier(node);
+                switch (mode)
+                {
+                    case GraphSearchMode.BreadthFirstSearch:
+                        ExpandFrontierBFS(node);
+                        break;
+                    case GraphSearchMode.Dijkstra:
+                        ExpandFrontierDijkstra(node);
+                        break;
+                }
 
                 var foundGoal = _frontierNodes.Contains(_goalNode);
                 if (foundGoal)
@@ -149,7 +161,7 @@ namespace Project.Scripts
             if (_pathNodes != null) _graphView.ShowNodeArrows(_pathNodes, highlightColor);
         }
 
-        private void ExpandFrontier([NotNull] Node node)
+        private void ExpandFrontierBFS([NotNull] Node node)
         {
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (node == null) return;
@@ -160,6 +172,27 @@ namespace Project.Scripts
 
                 neighbor.Previous = node;
                 _frontierNodes.Enqueue(neighbor);
+            }
+        }
+
+        private void ExpandFrontierDijkstra([NotNull] Node node)
+        {
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (node == null) return;
+            foreach (var neighbor in node.Neighbors)
+            {
+                if (_exploredNodes.Contains(neighbor)) continue;
+
+                var distanceToNeighbor = _graph.GetNodeDistance(node, neighbor);
+                var newDistanceTraveled = distanceToNeighbor + node.DistanceTraveled;
+
+                if (float.IsInfinity(neighbor.DistanceTraveled) || neighbor.DistanceTraveled > newDistanceTraveled)
+                {
+                    neighbor.DistanceTraveled = newDistanceTraveled;
+                    neighbor.Previous = node;
+                }
+
+                if (!_frontierNodes.Contains(neighbor)) _frontierNodes.Enqueue(neighbor);
             }
         }
 

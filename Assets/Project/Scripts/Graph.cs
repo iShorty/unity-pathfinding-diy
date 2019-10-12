@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using Project.Scripts.Project.Scripts;
 using UnityEngine;
@@ -70,15 +71,32 @@ namespace Project.Scripts
             }
         }
 
+        [SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalse")]
+        public float GetNodeDistance([NotNull] Node a, [NotNull] Node b)
+        {
+            if (a == null || b == null) return Mathf.Infinity;
+            var dx = Mathf.Abs(a.Index.x - b.Index.x);
+            var dy = Mathf.Abs(a.Index.y - b.Index.y);
+
+            var min = Mathf.Min(dx, dy);
+            var max = Mathf.Max(dx, dy);
+
+            var diagonalSteps = min;
+            var straightSteps = max - min;
+
+            // Here, 1.4 is an approximation of sqrt(1^2 + 1^2) = sqrt(2)
+            return 1.4f * diagonalSteps + straightSteps;
+        }
+
         public bool IsWithinBounds(in Vector2Int pos) => pos.x >= 0 && pos.x < _mapWidth &&
                                                       pos.y >= 0 && pos.y < _mapHeight;
+
+        public Node GetNode(in Vector2Int pos) => Nodes[pos.x, pos.y];
 
         [NotNull]
         public void GetNeighbors<TNodes>(in Vector2Int pos, [NotNull] TNodes nodeNeighbors)
             where TNodes : class, ICollection<Node>
             => GetNeighbors(pos, Nodes, AllDirections, nodeNeighbors);
-
-        public Node GetNode(in Vector2Int pos) => Nodes[pos.x, pos.y];
 
         private void GetNeighbors<TDirections, TNodes>(in Vector2Int pos, [NotNull] Node[,] nodes, [NotNull] TDirections directions, [NotNull] TNodes nodeNeighbors)
             where TDirections : class, IReadOnlyList<Vector2Int>

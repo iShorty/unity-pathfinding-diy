@@ -10,6 +10,8 @@ namespace Project.Scripts
         public readonly NodeType Type;
         public readonly Vector2Int Index;
 
+        public float DistanceTraveled = Mathf.Infinity;
+
         public Node(Vector2Int index, NodeType type)
         {
             Index = index;
