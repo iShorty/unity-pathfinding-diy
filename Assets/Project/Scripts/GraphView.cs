@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
-using Project.Scripts.Project.Scripts;
 using UnityEngine;
 
 namespace Project.Scripts
@@ -13,10 +12,7 @@ namespace Project.Scripts
         private GameObject nodeViewPrefab;
 
         [SerializeField]
-        private Color baseColor = Color.white;
-
-        [SerializeField]
-        private Color wallColor = Color.black;
+        private MapData mapData;
 
         public NodeView[,] Views { get; private set; }
 
@@ -37,19 +33,12 @@ namespace Project.Scripts
                 nodeView.Initialize(node);
                 Views[node.Index.x, node.Index.y] = nodeView;
 
-                switch (node.Type)
-                {
-                    case NodeType.Open:
-                        nodeView.ColorNode(baseColor);
-                        break;
-                    case NodeType.Blocked:
-                        nodeView.ColorNode(wallColor);
-                        break;
-                }
+                var color = mapData.GetColorFromNodeType(node);
+                nodeView.ColorNode(color);
             }
         }
 
-        public void ColorNodes([NotNull] IEnumerable<Node> nodes, Color color)
+        public void ColorNodes([NotNull] IEnumerable<Node> nodes, Color color, float lerpValue = 0)
         {
             foreach (var node in nodes)
             {
@@ -58,7 +47,14 @@ namespace Project.Scripts
                 var view = Views[node.Index.x, node.Index.y];
                 if (view == null) continue;
 
-                view.ColorNode(color);
+                var newColor = color;
+                if (lerpValue < 1.0f)
+                {
+                    var originalColor = mapData.GetColorFromNodeType(node);
+                    newColor = Color.Lerp(originalColor, newColor, lerpValue);
+                }
+
+                view.ColorNode(newColor);
             }
         }
 

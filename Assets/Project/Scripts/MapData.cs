@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
+using Project.Scripts.Project.Scripts;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -28,6 +29,23 @@ namespace Project.Scripts
         [SerializeField]
         private string resourcePath = "MapData";
 
+        [SerializeField]
+        private Color32 openColor = Color.white;
+
+        [SerializeField]
+        private Color32 blockedColor = Color.black;
+
+        [SerializeField]
+        private Color32 lightTerrainColor = new Color32(124, 194, 78, 255);
+
+        [SerializeField]
+        private Color32 mediumTerrainColor = new Color32(252, 255, 52, 255);
+
+        [SerializeField]
+        private Color32 heavyTerrainColor = new Color32(255, 129, 12, 255);
+
+        private readonly Dictionary<Color, NodeType> _terrainLookupTable = new Dictionary<Color, NodeType>();
+
         private void Awake()
         {
             var sceneName = SceneManager.GetActiveScene().name;
@@ -43,6 +61,8 @@ namespace Project.Scripts
                 // TODO: This break if the file is a texture instead.
                 textAsset = Resources.Load<TextAsset>($"{resourcePath}/{sceneName}");
             }
+
+            SetupLookupTable();
         }
 
         [NotNull]
@@ -108,13 +128,10 @@ namespace Project.Scripts
                 for (var xIndex = 0; xIndex < texture.width; ++xIndex)
                 {
                     var color = texture.GetPixel(xIndex, yIndex);
-                    if (color == Color.black)
+                    if (_terrainLookupTable.ContainsKey(color))
                     {
-                        sb.Append('1');
-                    }
-                    else if (color == Color.white)
-                    {
-                        sb.Append('0');
+                        var nodeType = _terrainLookupTable[color];
+                        sb.Append((int)nodeType);
                     }
                     else
                     {
@@ -126,6 +143,26 @@ namespace Project.Scripts
             }
 
             return lines;
+        }
+
+        public Color GetColorFromNodeType([NotNull] Node node) => GetColorFromNodeType(node.Type);
+
+        public Color GetColorFromNodeType(NodeType type)
+        {
+            // TODO: Can we get rid of ContainsValue since we also do FirstOrDefault?
+            if (!_terrainLookupTable.ContainsValue(type)) return Color.white;
+            var color = _terrainLookupTable.FirstOrDefault(x => x.Value == type);
+            return color.Key;
+        }
+
+        private void SetupLookupTable()
+        {
+            _terrainLookupTable.Clear();
+            _terrainLookupTable.Add(openColor, NodeType.Open);
+            _terrainLookupTable.Add(blockedColor, NodeType.Blocked);
+            _terrainLookupTable.Add(lightTerrainColor, NodeType.LightTerrain);
+            _terrainLookupTable.Add(mediumTerrainColor, NodeType.MediumTerrain);
+            _terrainLookupTable.Add(heavyTerrainColor, NodeType.HeavyTerrain);
         }
     }
 }

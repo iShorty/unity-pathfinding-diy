@@ -153,7 +153,7 @@ MonoBehaviour:
   width: 10
   height: 5
   textAsset: {fileID: 0}
-  textureMap: {fileID: 2800000, guid: 7b89d42d6d5044024ab034ede118955b, type: 3}
+  textureMap: {fileID: 2800000, guid: ba662acbc3b1f3b01baa893048788df3, type: 3}
   resourcePath: MapData
   openColor:
     serializedVersion: 2
@@ -305,7 +305,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fba265b864964d128441ff3e4f533c94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mode: 0
+  mode: 1
   startColor: {r: 0, g: 1, b: 0, a: 1}
   goalColor: {r: 1, g: 0, b: 0, a: 1}
   frontierColor: {r: 1, g: 0, b: 1, a: 1}
@@ -317,6 +317,7 @@ MonoBehaviour:
   showColors: 1
   showArrows: 1
   exitOnGoal: 1
+  lerpColorAmount: 0.75
 --- !u!4 &855121994
 Transform:
   m_ObjectHideFlags: 0
@@ -384,7 +385,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 6
+  orthographic size: 10
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -407,8 +408,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 7, y: 10, z: 4}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 15.5, y: 1, z: 8.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -446,8 +447,8 @@ MonoBehaviour:
   mapData: {fileID: 45806944}
   graph: {fileID: 1874008835}
   pathfinder: {fileID: 855121993}
-  startCoordinates: {x: 3, y: 6}
-  goalCoordinates: {x: 12, y: 4}
+  startCoordinates: {x: 0, y: 0}
+  goalCoordinates: {x: 20, y: 12}
   timeStep: 0
 --- !u!4 &1277054407
 Transform:

@@ -45,6 +45,9 @@ namespace Project.Scripts
         [SerializeField]
         private bool exitOnGoal = true;
 
+        [SerializeField, Range(0f, 1f)]
+        private float lerpColorAmount = 0.75f;
+
         private Node _startNode;
         private Node _goalNode;
 
@@ -143,7 +146,7 @@ namespace Project.Scripts
             }
 
             IsComplete = true;
-            Debug.Log($"Elapsed time: {Time.time - timeStart} seconds.");
+            Debug.Log($"Elapsed time: {Time.time - timeStart} seconds. Distance traveled: {_goalNode.DistanceTraveled} units.");
 
             ShowDiagnostics();
         }
@@ -170,6 +173,13 @@ namespace Project.Scripts
                 if (_exploredNodes.Contains(neighbor)) continue;
                 if (_frontierNodes.Contains(neighbor)) continue;
 
+                // We don't need the distance traveled for the search itself,
+                // but it does help us in judging the quality of the trajectory.
+                var distanceToNeighbor = _graph.GetNodeDistance(node, neighbor);
+                var terrainCost = (int)node.Type;
+                var newDistanceTraveled = node.DistanceTraveled + distanceToNeighbor + terrainCost;
+                neighbor.DistanceTraveled = newDistanceTraveled;
+
                 // Since we added a priority queue instead of a regular one,
                 // this broke the BFS algorithm. We can emulate regular queue behavior
                 // by adding a monotonically increasing priority for each item.
@@ -189,7 +199,8 @@ namespace Project.Scripts
                 if (_exploredNodes.Contains(neighbor)) continue;
 
                 var distanceToNeighbor = _graph.GetNodeDistance(node, neighbor);
-                var newDistanceTraveled = distanceToNeighbor + node.DistanceTraveled;
+                var terrainCost = (int)node.Type;
+                var newDistanceTraveled = node.DistanceTraveled + distanceToNeighbor + terrainCost;
 
                 if (float.IsInfinity(neighbor.DistanceTraveled) || neighbor.DistanceTraveled > newDistanceTraveled)
                 {
@@ -209,9 +220,9 @@ namespace Project.Scripts
         {
             if (graphView == null || start == null || goal == null) return;
 
-            if (_frontierNodes != null) graphView.ColorNodes(_frontierNodes, frontierColor);
-            if (_exploredNodes != null) graphView.ColorNodes(_exploredNodes, exploredColor);
-            if (_pathNodes != null) graphView.ColorNodes(_pathNodes, pathColor);
+            if (_frontierNodes != null) graphView.ColorNodes(_frontierNodes, frontierColor, lerpColorAmount);
+            if (_exploredNodes != null) graphView.ColorNodes(_exploredNodes, exploredColor, lerpColorAmount);
+            if (_pathNodes != null) graphView.ColorNodes(_pathNodes, pathColor, lerpColorAmount);
 
             var startNodeView = graphView.GetView(start);
             if (startNodeView != null) startNodeView.ColorNode(startColor);
